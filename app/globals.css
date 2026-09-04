@@ -74,6 +74,8 @@ html {
 }
 
 body {
+  /* Belt-and-braces: a single wide child must never scroll the whole page sideways. */
+  overflow-x: clip;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
