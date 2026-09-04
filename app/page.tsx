@@ -1,15 +1,76 @@
+import Image from "next/image";
+import { Counter } from "@/components/counter";
 import { Reveal } from "@/components/reveal";
-import { experience, nav, projects, services, site, stack, stats } from "@/lib/content";
+import { SiteHeader } from "@/components/site-header";
+import { Spotlight } from "@/components/spotlight";
+import {
+  capabilities,
+  products,
+  shippedIcons,
+  site,
+  stack,
+  stats,
+  publishedExperience,
+  type Product,
+} from "@/lib/content";
 
-function SectionHeading({ index, title, lead }: { index: string; title: string; lead?: string }) {
+const bySlug = (slug: string) => products.find((p) => p.slug === slug)!;
+const stoptime = bySlug("stoptime");
+const foodino = bySlug("foodino");
+const attic = bySlug("attic");
+
+const storeLabel = { play: "Google Play", appstore: "App Store", web: "Website" } as const;
+
+function StoreLinks({ product, className = "" }: { product: Product; className?: string }) {
+  return (
+    <ul className={`flex flex-wrap gap-2 ${className}`}>
+      {product.stores.map((store) => (
+        <li key={store.href}>
+          <a
+            href={store.href}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] text-fg-2 transition-colors hover:border-line-2 hover:text-fg"
+          >
+            {storeLabel[store.kind]}
+            <span aria-hidden="true" className="text-fg-4">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Status({ product }: { product: Product }) {
+  return (
+    <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-fg-3">
+      <span className={`dot ${product.status === "review" ? "dot-pending" : "dot-live"}`} />
+      {product.statusLabel}
+    </span>
+  );
+}
+
+function AppIcon({ src, name, size = 44 }: { src: string; name: string; size?: number }) {
+  return (
+    <Image
+      src={src}
+      alt={`${name} app icon`}
+      width={size}
+      height={size}
+      className="rounded-[22%] ring-1 ring-white/10"
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
+function SectionHead({ label, title, lead }: { label: string; title: string; lead?: string }) {
   return (
     <Reveal className="max-w-2xl">
-      <div className="flex items-center gap-3">
-        <span className="eyebrow">{index}</span>
-        <span className="h-px w-8 bg-line-2" />
-      </div>
-      <h2 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight text-ink">{title}</h2>
-      {lead ? <p className="mt-3 text-base sm:text-lg leading-relaxed text-ink-3">{lead}</p> : null}
+      <p className="mono-label">{label}</p>
+      <h2 className="mt-4 font-display text-[clamp(1.9rem,4vw,2.9rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-fg">
+        {title}
+      </h2>
+      {lead ? <p className="mt-4 text-[17px] leading-relaxed text-fg-2">{lead}</p> : null}
     </Reveal>
   );
 }
@@ -17,87 +78,170 @@ function SectionHeading({ index, title, lead }: { index: string; title: string; 
 export default function Home() {
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-line bg-paper/80 backdrop-blur-md">
-        <div className="rail flex h-16 items-center justify-between gap-6">
-          <a href="#top" className="font-mono text-sm tracking-tight text-ink">
-            {site.name}
-            <span className="text-ember">.</span>
-          </a>
-          <nav className="hidden md:flex items-center gap-7">
-            {nav.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="link-ember text-sm text-ink-3 hover:text-ember"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <a
-            href={`mailto:${site.email}`}
-            className="rounded-full border border-line-2 px-4 py-2 text-sm text-ink transition-colors hover:border-ember hover:text-ember"
-          >
-            Get in touch
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main id="top">
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 grid-fade" aria-hidden="true" />
-          <div className="rail relative pt-20 pb-16 sm:pt-28 sm:pb-24">
+        {/* ── Hero + bento ─────────────────────────────────────── */}
+        <section className="relative">
+          <div className="aurora" aria-hidden="true" />
+          <div className="hairlines" aria-hidden="true" />
+
+          <div className="rail relative pt-16 pb-14 sm:pt-24 sm:pb-20">
             <Reveal>
-              <p className="eyebrow flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-ember" />
-                </span>
-                Open to work &amp; new projects · {site.location}
+              <p className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-fg-3">
+                <span className="dot dot-live" />
+                {site.availability} · {site.location}
               </p>
             </Reveal>
 
-            <Reveal delay={80}>
-              <h1 className="mt-7 max-w-4xl text-[clamp(2.5rem,7vw,5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-ink">
-                I build products
-                <br />
-                and{" "}
-                <span className="font-display italic font-normal text-ember">actually ship</span>{" "}
-                them.
+            <Reveal delay={70}>
+              <h1 className="mt-8 font-display text-[clamp(2.75rem,8.5vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] text-fg">
+                {site.headline.map((line, i) => (
+                  <span key={line} className={i === 2 ? "block text-fg-3" : "block"}>
+                    {line}
+                  </span>
+                ))}
               </h1>
             </Reveal>
 
-            <Reveal delay={160}>
-              <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink-2">{site.tagline}</p>
+            <Reveal delay={140}>
+              <p className="mt-8 max-w-2xl text-[17px] leading-relaxed text-fg-2">{site.lede}</p>
             </Reveal>
 
-            <Reveal delay={240}>
-              <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Reveal delay={200}>
+              <div className="mt-9 flex flex-wrap items-center gap-3">
                 <a
-                  href="#work"
-                  className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition-transform hover:-translate-y-0.5"
+                  href={`mailto:${site.email}`}
+                  className="rounded-xl bg-fg px-5 py-3 text-sm font-medium text-bg transition-transform hover:-translate-y-0.5"
                 >
-                  See the work
+                  Start a conversation
                 </a>
                 <a
-                  href="#contact"
-                  className="rounded-full border border-line-2 px-6 py-3 text-sm font-medium text-ink transition-colors hover:border-ember hover:text-ember"
+                  href="#work"
+                  className="rounded-xl border border-line-2 px-5 py-3 text-sm font-medium text-fg transition-colors hover:border-accent hover:text-accent-hi"
                 >
-                  Start a project
+                  See what I shipped
                 </a>
               </div>
             </Reveal>
 
-            <Reveal delay={320}>
-              <dl className="mt-20 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-line pt-10 sm:grid-cols-4">
+            {/* Bento: the products carry the colour. */}
+            <Spotlight className="mt-16 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Reveal
+                as="article"
+                className="panel group flex flex-col justify-between p-6 sm:col-span-2 lg:row-span-2"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <AppIcon src={stoptime.icon!} name={stoptime.name} size={56} />
+                    <Status product={stoptime} />
+                  </div>
+                  <h3 className="mt-5 font-display text-2xl font-semibold tracking-tight text-fg">
+                    {stoptime.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-fg-3">{stoptime.type}</p>
+                  <p className="mt-4 text-[15px] leading-relaxed text-fg-2">{stoptime.pitch}</p>
+                  <ul className="mt-6 space-y-2.5">
+                    {stoptime.facts?.map((fact) => (
+                      <li key={fact} className="flex items-start gap-3 text-[14px] text-fg-3">
+                        <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                        {fact}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-line pt-6">
+                  <ul className="mb-6 flex flex-wrap gap-x-3 gap-y-1">
+                    {stoptime.tech.map((tech) => (
+                      <li key={tech} className="font-mono text-[11px] text-fg-4">
+                        {tech}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="font-display text-[clamp(3rem,7vw,4.5rem)] font-semibold leading-none tracking-[-0.04em] text-fg">
+                    <Counter value={419} />
+                  </p>
+                  <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-4">
+                    players a day
+                  </p>
+                  <StoreLinks product={stoptime} className="mt-6" />
+                </div>
+              </Reveal>
+
+              <Reveal as="article" delay={60} className="panel flex flex-col justify-between p-6 sm:col-span-2">
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-hi">
+                      SaaS
+                    </span>
+                    <Status product={foodino} />
+                  </div>
+                  <h3 className="mt-4 font-display text-2xl font-semibold tracking-tight text-fg">
+                    {foodino.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-fg-3">{foodino.type}</p>
+                  <p className="mt-4 text-[15px] leading-relaxed text-fg-2">{foodino.pitch}</p>
+                  <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+                    {foodino.facts?.map((fact) => (
+                      <li key={fact} className="flex items-center gap-2 text-[13px] text-fg-3">
+                        <span className="h-1 w-1 rounded-full bg-accent" aria-hidden="true" />
+                        {fact}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <StoreLinks product={foodino} className="mt-6" />
+              </Reveal>
+
+              <Reveal as="article" delay={120} className="panel flex flex-col justify-between p-6">
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <AppIcon src={attic.icon!} name={attic.name} size={44} />
+                    <span className="mt-1.5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-fg-3">
+                      <span className="dot dot-pending" />
+                      iOS in review
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-fg">
+                    {attic.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-fg-3">{attic.type}</p>
+                </div>
+                <div className="mt-6">
+                  <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-fg">
+                    <Counter value={27} />
+                  </p>
+                  <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-4">
+                    languages shipped
+                  </p>
+                </div>
+              </Reveal>
+
+              <Reveal as="article" delay={180} className="panel p-6">
+                <p className="mono-label">Everything shipped</p>
+                <ul className="mt-5 grid grid-cols-4 gap-3">
+                  {shippedIcons.map((app) => (
+                    <li key={app.name} title={app.name}>
+                      <AppIcon src={app.icon} name={app.name} size={40} />
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 text-[13px] leading-relaxed text-fg-3">
+                  Eight apps on Google Play and the App Store, built and released solo.
+                </p>
+              </Reveal>
+            </Spotlight>
+
+            {/* Metric strip */}
+            <Reveal delay={120}>
+              <dl className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
                 {stats.map((stat) => (
-                  <div key={stat.label}>
-                    <dt className="font-mono text-3xl sm:text-4xl tracking-tight text-ink">
-                      {stat.value}
+                  <div key={stat.label} className="panel px-5 py-5">
+                    <dt className="font-display text-3xl font-semibold tracking-[-0.03em] text-fg">
+                      <Counter value={stat.value} suffix={stat.suffix} />
                     </dt>
-                    <dd className="mt-2 text-sm font-medium text-ink-2">{stat.label}</dd>
-                    <dd className="text-sm text-ink-4">{stat.note}</dd>
+                    <dd className="mt-1.5 text-[13px] font-medium text-fg-2">{stat.label}</dd>
+                    <dd className="font-mono text-[11px] text-fg-4">{stat.note}</dd>
                   </div>
                 ))}
               </dl>
@@ -105,178 +249,224 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Work ─────────────────────────────────────────────── */}
+        {/* ── Work index ───────────────────────────────────────── */}
         <section id="work" className="rail py-20 sm:py-28">
-          <SectionHeading
-            index="01 / work"
-            title="Selected work"
-            lead={site.intro}
+          <SectionHead
+            label="Index · what I shipped"
+            title="Nine products, and what each one taught"
+            lead="Every one of these is live: in a store, or serving paying customers. Most were designed, built, released and operated by me alone."
           />
 
-          <div className="mt-14 grid gap-5 lg:grid-cols-2">
-            {projects.map((project, i) => (
-              <Reveal
-                key={project.slug}
-                as="article"
-                delay={(i % 2) * 80}
-                className={`group flex flex-col rounded-2xl border border-line bg-paper-2 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-line-2 hover:shadow-[var(--shadow-lg)] ${
-                  project.featured ? "lg:col-span-1" : ""
-                }`}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
-                  <div className="min-w-0">
-                    <h3 className="text-2xl font-semibold tracking-tight text-ink">
-                      {project.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-ink-3">{project.kind}</p>
+          {/* The three that carry the most engineering get full write-ups. */}
+          <Spotlight className="mt-12 space-y-3">
+            {products
+              .filter((product) => product.featured)
+              .map((product, i) => (
+                <Reveal key={product.slug} as="article" delay={i * 50} className="panel p-6 sm:p-8">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:gap-12">
+                    <div className="flex items-start gap-4 lg:w-[260px] lg:shrink-0">
+                      {product.icon ? (
+                        <AppIcon src={product.icon} name={product.name} size={52} />
+                      ) : (
+                        <span className="flex h-[52px] w-[52px] items-center justify-center rounded-[22%] bg-surface-3 font-mono text-sm text-accent-hi ring-1 ring-white/10">
+                          {product.name.slice(0, 2)}
+                        </span>
+                      )}
+                      <div className="min-w-0">
+                        <h3 className="font-display text-xl font-semibold tracking-tight text-fg">
+                          {product.name}
+                        </h3>
+                        <p className="mt-0.5 text-sm text-fg-3">{product.type}</p>
+                        <div className="mt-2.5">
+                          <Status product={product} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[17px] leading-relaxed text-fg">{product.pitch}</p>
+                      <p className="mt-3 text-[15px] leading-relaxed text-fg-3">{product.detail}</p>
+                      <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+                        <StoreLinks product={product} />
+                        <ul className="flex flex-wrap gap-x-3 gap-y-1">
+                          {product.tech.map((tech) => (
+                            <li key={tech} className="font-mono text-[11px] text-fg-4">
+                              {tech}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {product.metric ? (
+                      <div className="lg:w-28 lg:shrink-0 lg:text-right">
+                        <p className="font-display text-4xl font-semibold tracking-[-0.035em] text-fg">
+                          {product.metric.value}
+                        </p>
+                        <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-fg-4">
+                          {product.metric.label}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
-                  <span className="rounded-full border border-line-2 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-ink-3">
-                    {project.status}
-                  </span>
-                </div>
+                </Reveal>
+              ))}
+          </Spotlight>
 
-                <p className="mt-5 text-[15px] leading-relaxed text-ink-2">{project.summary}</p>
+          {/* The rest as a compact shelf, so the page has a rhythm. */}
+          <Reveal className="mt-14 flex items-center gap-4">
+            <p className="mono-label">Also shipped</p>
+            <span className="h-px flex-1 bg-line" />
+          </Reveal>
 
-                <ul className="mt-5 space-y-2.5">
-                  {project.highlights.map((point) => (
-                    <li key={point} className="flex gap-3 text-[15px] leading-relaxed text-ink-3">
-                      <span
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ember"
-                        aria-hidden="true"
-                      />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
+          <Spotlight className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {products
+              .filter((product) => !product.featured)
+              .map((product, i) => (
+                <Reveal
+                  key={product.slug}
+                  as="article"
+                  delay={Math.min(i, 3) * 50}
+                  className="panel flex flex-col p-5"
+                >
+                  <div className="flex items-start gap-3.5">
+                    {product.icon ? (
+                      <AppIcon src={product.icon} name={product.name} size={40} />
+                    ) : null}
+                    <div className="min-w-0">
+                      <h3 className="font-display text-base font-semibold tracking-tight text-fg">
+                        {product.name}
+                      </h3>
+                      <p className="mt-0.5 text-[13px] text-fg-3">{product.type}</p>
+                    </div>
+                    {product.metric ? (
+                      <p className="ml-auto text-right font-display text-lg font-semibold tracking-tight text-fg">
+                        {product.metric.value}
+                      </p>
+                    ) : null}
+                  </div>
 
-                <ul className="mt-6 flex flex-wrap gap-2 border-t border-line pt-5">
-                  {project.stack.map((tech) => (
-                    <li
-                      key={tech}
-                      className="rounded-md bg-paper-3 px-2.5 py-1 font-mono text-[11px] text-ink-3"
-                    >
-                      {tech}
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-            ))}
-          </div>
+                  <p className="mt-4 flex-1 text-[14px] leading-relaxed text-fg-2">{product.pitch}</p>
+
+                  <div className="mt-5 flex items-center justify-between gap-3">
+                    <StoreLinks product={product} />
+                    <Status product={product} />
+                  </div>
+                </Reveal>
+              ))}
+          </Spotlight>
         </section>
 
         {/* ── Services ─────────────────────────────────────────── */}
-        <section id="services" className="border-y border-line bg-paper-2">
+        <section id="services" className="border-t border-line bg-surface/40">
           <div className="rail py-20 sm:py-28">
-            <SectionHeading
-              index="02 / services"
-              title="What I can build for you"
-              lead="Hiring me for a team or a project gets the same thing: someone who owns a feature from the idea to the version that real people use."
+            <SectionHead
+              label="Services · for teams and clients"
+              title="What you get when you bring me in"
+              lead="Hiring me into a team and hiring me for a project get the same thing: someone who owns a feature from the idea to the version real people use — and who stays around for what happens after."
             />
-            <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
-              {services.map((service, i) => (
-                <Reveal key={service.title} delay={i * 60} className="bg-paper p-7 sm:p-9">
-                  <h3 className="text-lg font-semibold tracking-tight text-ink">{service.title}</h3>
-                  <p className="mt-3 text-[15px] leading-relaxed text-ink-3">{service.body}</p>
+            <Spotlight className="mt-12 grid gap-3 sm:grid-cols-2">
+              {capabilities.map((item, i) => (
+                <Reveal key={item.title} delay={i * 50} className="panel p-7">
+                  <h3 className="font-display text-lg font-semibold tracking-tight text-fg">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-[15px] leading-relaxed text-fg-2">{item.body}</p>
                 </Reveal>
               ))}
-            </div>
+            </Spotlight>
           </div>
         </section>
 
         {/* ── Stack ────────────────────────────────────────────── */}
         <section id="stack" className="rail py-20 sm:py-28">
-          <SectionHeading index="03 / stack" title="Tools I reach for" />
-          <div className="mt-14 space-y-px overflow-hidden rounded-2xl border border-line bg-line">
-            {stack.map((row, i) => (
+          <SectionHead label="Stack" title="Tools I reach for" />
+          <Spotlight className="mt-12 panel divide-y divide-[color:var(--line)]">
+            {stack.map((row) => (
               <Reveal
                 key={row.group}
-                delay={i * 50}
-                className="flex flex-col gap-4 bg-paper p-6 sm:flex-row sm:items-baseline sm:gap-10 sm:p-7"
+                className="flex flex-col gap-3 p-6 sm:flex-row sm:items-baseline sm:gap-10"
               >
-                <h3 className="w-36 shrink-0 font-mono text-xs uppercase tracking-[0.14em] text-ink-4">
+                <h3 className="w-28 shrink-0 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-4">
                   {row.group}
                 </h3>
                 <ul className="flex flex-wrap gap-x-5 gap-y-2">
                   {row.items.map((item) => (
-                    <li key={item} className="text-[15px] text-ink-2">
+                    <li key={item} className="text-[15px] text-fg-2">
                       {item}
                     </li>
                   ))}
                 </ul>
               </Reveal>
             ))}
-          </div>
-        </section>
+          </Spotlight>
 
-        {/* ── Experience ───────────────────────────────────────── */}
-        <section id="experience" className="border-y border-line bg-paper-2">
-          <div className="rail py-20 sm:py-28">
-            <SectionHeading index="04 / experience" title="Where I've worked" />
-            <ol className="mt-14 space-y-px overflow-hidden rounded-2xl border border-line bg-line">
-              {experience.map((job, i) => (
+          <div className="mt-16">
+            <SectionHead label="Experience" title="Where I've worked" />
+            <Spotlight className="mt-12 space-y-3">
+              {publishedExperience.map((job, i) => (
                 <Reveal
                   key={`${job.title}-${i}`}
-                  as="li"
-                  delay={i * 60}
-                  className="flex flex-col gap-3 bg-paper p-6 sm:flex-row sm:gap-10 sm:p-8"
+                  className="panel flex flex-col gap-3 p-6 sm:flex-row sm:gap-10 sm:p-7"
                 >
-                  <p className="w-36 shrink-0 font-mono text-xs uppercase tracking-[0.14em] text-ink-4">
+                  <p className="w-28 shrink-0 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-4">
                     {job.period}
                   </p>
                   <div>
-                    <h3 className="text-lg font-semibold tracking-tight text-ink">{job.title}</h3>
-                    <p className="mt-0.5 text-sm text-ember">{job.org}</p>
-                    <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-ink-3">
-                      {job.body}
-                    </p>
+                    <h3 className="font-display text-lg font-semibold tracking-tight text-fg">
+                      {job.title}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-accent-hi">{job.org}</p>
+                    <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-fg-2">{job.body}</p>
                   </div>
                 </Reveal>
               ))}
-            </ol>
+            </Spotlight>
           </div>
         </section>
 
         {/* ── Contact ──────────────────────────────────────────── */}
-        <section id="contact" className="rail py-24 sm:py-32">
-          <Reveal className="max-w-3xl">
-            <span className="eyebrow">05 / contact</span>
-            <h2 className="mt-5 text-[clamp(2rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-ink">
-              Have something worth{" "}
-              <span className="font-display italic font-normal text-ember">building</span>?
-            </h2>
-            <p className="mt-6 text-lg leading-relaxed text-ink-2">
-              Whether you&apos;re hiring for a team or need a product built from scratch — write to
-              me and tell me what you have in mind.
-            </p>
-            <a
-              href={`mailto:${site.email}`}
-              className="mt-10 inline-block font-mono text-[clamp(1rem,3.2vw,1.6rem)] text-ink link-ember"
-            >
-              {site.email}
-            </a>
-            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm">
-              <a href={site.github} className="link-ember text-ink-3" target="_blank" rel="noreferrer">
-                GitHub
-              </a>
+        <section id="contact" className="relative border-t border-line">
+          <div className="rail py-24 sm:py-32">
+            <Reveal className="max-w-3xl">
+              <p className="mono-label">Contact</p>
+              <h2 className="mt-5 font-display text-[clamp(2.2rem,6vw,4.2rem)] font-semibold leading-[1.0] tracking-[-0.04em] text-fg">
+                Tell me what you&apos;re building.
+              </h2>
+              <p className="mt-6 text-[17px] leading-relaxed text-fg-2">
+                Hiring for a team, or need a product built and shipped? Write to me — I answer every
+                message myself.
+              </p>
               <a
-                href={site.brand.href}
-                className="link-ember text-ink-3"
-                target="_blank"
-                rel="noreferrer"
+                href={`mailto:${site.email}`}
+                className="mt-9 inline-block font-mono text-[clamp(0.95rem,3vw,1.5rem)] text-fg underline-grow"
               >
-                {site.brand.label}
+                {site.email}
               </a>
-            </div>
-          </Reveal>
+              <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-sm">
+                <a href={site.github} target="_blank" rel="noreferrer" className="link underline-grow">
+                  GitHub ↗
+                </a>
+                <a
+                  href={site.brand.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="link underline-grow"
+                >
+                  {site.brand.label} ↗
+                </a>
+              </div>
+            </Reveal>
+          </div>
         </section>
       </main>
 
       <footer className="border-t border-line">
         <div className="rail flex flex-col gap-2 py-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-mono text-xs text-ink-4">
+          <p className="font-mono text-[11px] text-fg-4">
             © {new Date().getFullYear()} {site.name}
           </p>
-          <p className="font-mono text-xs text-ink-4">Built with Next.js · hosted on GitHub Pages</p>
+          <p className="font-mono text-[11px] text-fg-4">Next.js · GitHub Pages</p>
         </div>
       </footer>
     </>
