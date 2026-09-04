@@ -29,8 +29,14 @@ export const metadata: Metadata = {
     siteName: site.name,
     type: "website",
     locale: "en_US",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: `${site.name} — ${site.role}` }],
   },
-  twitter: { card: "summary_large_image", title: site.name, description },
+  twitter: {
+    card: "summary_large_image",
+    title: site.name,
+    description,
+    images: ["/og.png"],
+  },
   robots: { index: true, follow: true },
 };
 
