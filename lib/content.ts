@@ -90,14 +90,15 @@ export const products: Product[] = [
     name: "Attic",
     type: "Photo cleanup",
     icon: "/apps/AtticIcon.webp",
-    status: "review",
-    statusLabel: "Android live · iOS in review",
+    status: "live",
+    statusLabel: "Live",
     pitch: "Swipe your camera roll clean. Nine shots of the same sunset arrive as one decision.",
     detail:
       "Sorting happens entirely on device — no accounts, no uploads. Nothing is deleted until you confirm; everything waits in an archive one tap away. Shipped in 27 languages in a single release, store listings included, with the listings themselves rebuilt from ASO research rather than guesswork.",
     metric: { value: "27", label: "languages" },
     tech: ["Flutter", "Platform channels", "l10n", "ASO"],
     stores: [
+      { kind: "appstore", href: "https://apps.apple.com/us/app/attic-photo-cleaner-swipe/id6797534856" },
       { kind: "play", href: "https://play.google.com/store/apps/details?id=com.mikitari.attic" },
       { kind: "web", href: "https://attic.mikitari.com/" },
     ],
