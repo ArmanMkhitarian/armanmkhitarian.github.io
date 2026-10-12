@@ -30,6 +30,25 @@ jobs:
 
       - run: npm run build
 
+      # Main copy for Russian visitors: arman.mikitari.com on the reg.ru hosting.
+      # Skipped until the FTP secrets exist. Never add dangerous-clean-slate:
+      # the hosting account also serves mikitari.com and its server-only configs.
+      - name: Upload to reg.ru (arman.mikitari.com)
+        if: env.FTP_SERVER != ''
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT || 21 }}
+          protocol: ${{ secrets.FTP_PROTOCOL || 'ftps' }}
+          local-dir: ./out/
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/www/arman.mikitari.com/' }}
+          timeout: 60000
+          log-level: standard
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
