@@ -3,11 +3,11 @@ import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/content";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const tight = Inter_Tight({ subsets: ["latin"], variable: "--font-tight", display: "swap" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono-jb", display: "swap" });
+const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter", display: "swap" });
+const tight = Inter_Tight({ subsets: ["latin", "cyrillic"], variable: "--font-tight", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], variable: "--font-mono-jb", display: "swap" });
 
-const description = `${site.role} — mobile & backend. ${site.lede}`;
+const description = `${site.role}. ${site.lede}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     url: site.url,
     siteName: site.name,
     type: "website",
-    locale: "en_US",
+    locale: "ru_RU",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: `${site.name} — ${site.role}` }],
   },
   twitter: {
@@ -35,21 +35,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#08090A",
-  colorScheme: "dark",
+  themeColor: "#F3F4F6",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
-      className={`no-js ${inter.variable} ${tight.variable} ${mono.variable}`}
+      lang="ru"
+      className={`${inter.variable} ${tight.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        {/* Drop `no-js` before first paint so reveals only hide when JS can show them. */}
-        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.classList.remove('no-js')` }} />
-      </head>
       <body className="min-h-screen">{children}</body>
     </html>
   );

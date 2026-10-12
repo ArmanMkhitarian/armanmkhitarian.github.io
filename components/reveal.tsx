@@ -1,66 +1,49 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
-type Props = {
-  children: ReactNode;
-  as?: ElementType;
-  className?: string;
-  /** Stagger within a group, in ms. */
-  delay?: number;
-};
+type Props = { children: ReactNode; className?: string; delay?: number };
 
 /**
- * Fades its children in the first time they scroll into view.
+ * Rises into view the first time it is scrolled to.
  *
- * The content is only ever hidden while an observer is actually in a position
- * to reveal it: reduced motion, a missing IntersectionObserver, or an observer
- * that simply never fires all fall back to showing the content outright. A
- * portfolio that renders blank because an animation hook missed is worse than
- * one that never animates.
+ * Fail-safe by construction: the server renders it visible, and it is only
+ * hidden after mount if it starts below the fold — so nothing on screen ever
+ * flashes, and a guard timer shows everything if the observer never fires.
  */
-export function Reveal({ children, as: Tag = "div", className = "", delay = 0 }: Props) {
-  const ref = useRef<HTMLElement>(null);
-  const [shown, setShown] = useState(false);
+export function Reveal({ children, className = "", delay = 0 }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.92) return;
 
-    if (
-      typeof IntersectionObserver === "undefined" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      setShown(true);
-      return;
-    }
-
+    el.style.transitionDelay = `${delay}ms`;
+    el.classList.add("rv-hide");
+    const show = () => el.classList.remove("rv-hide");
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        setShown(true);
+        show();
         observer.disconnect();
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.02 },
+      { rootMargin: "0px 0px -6% 0px" },
     );
     observer.observe(el);
-
-    // Safety net: nothing stays invisible for longer than this.
-    const guard = window.setTimeout(() => setShown(true), 1600);
-
+    const guard = window.setTimeout(show, 3000);
     return () => {
       observer.disconnect();
       window.clearTimeout(guard);
+      show();
     };
-  }, []);
+  }, [delay]);
 
   return (
-    <Tag
-      ref={ref}
-      className={`reveal ${shown ? "is-in" : ""} ${className}`}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
-    >
+    <div ref={ref} className={`rv ${className}`}>
       {children}
-    </Tag>
+    </div>
   );
 }

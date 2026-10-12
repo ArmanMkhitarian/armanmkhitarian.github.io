@@ -1,262 +1,507 @@
 /**
- * Single source of truth for every word and every product on the site.
+ * Single source of truth for every word and every project on the site.
  * Components only lay this out.
  */
 
 export const site = {
-  name: "Arman Mkhitaryan",
-  role: "Product engineer",
-  email: "arman.mkhitaryan.1997@gmail.com",
-  github: "https://github.com/ArmanMkhitarian",
-  brand: { label: "mikitari.com", href: "https://mikitari.com" },
+  name: "Арман Мхитарян",
+  role: "Продуктовый инженер",
+  email: "arman.mkhitaryan.1997@mail.ru",
+  telegram: "https://t.me/armanmkhitarian",
+  telegramHandle: "@armanmkhitarian",
+  linkedin: "https://www.linkedin.com/in/armanmkhitarian",
   url: "https://armanmkhitarian.github.io",
-  location: "Remote",
-  availability: "Open to work & new projects",
-  /** Hero headline, one line per array entry. */
-  headline: ["Eight apps.", "Two stores.", "One person."],
-  lede: "I design, build, release and run mobile products end to end — and the .NET backends behind them. Not prototypes: things that live in the stores, take payments and have users who come back tomorrow.",
+  /** One line under the header; the work speaks for the rest. */
+  lede: "Делаю продукты целиком — от кода и ИИ-автоматизаций до магазинов приложений, рекламы и первых клиентов",
 };
 
-export const stats = [
-  { value: 8, suffix: "", label: "apps live", note: "Google Play & App Store" },
-  { value: 419, suffix: "", label: "daily players", note: "StopTime, Sept 2026" },
-  { value: 27, suffix: "", label: "languages", note: "shipped in one release" },
-  { value: 1, suffix: "", label: "SaaS in production", note: "with paying customers" },
+export const hero = {
+  intro: "Делаю приложения и сервисы, продвигаю их и создаю для них рекламу и контент с помощью ИИ",
+  facts: [
+    { icon: "/work/skills/icon-downloads.webp", value: "50 тыс.+", label: "скачиваний моих приложений" },
+    { icon: "/work/skills/icon-apps.webp", value: "9", label: "приложений в Google Play и App Store" },
+    { icon: "/work/skills/icon-experience.webp", value: "8 лет", label: "в коммерческой разработке" },
+  ],
+};
+
+export const skills = [
+  {
+    title: "Разработка",
+    tag: "dev" as Tag,
+    image: "/work/skills/dev.webp",
+    tint: "#7C5CFF",
+    tags: ["iOS и Android", "SaaS", "ИИ-агенты", "Платежи"],
+  },
+  {
+    title: "Продвижение и реклама",
+    tag: "growth" as Tag,
+    image: "/work/skills/promo.webp",
+    tint: "#3D7BFF",
+    tags: ["Google Ads", "ASO", "Рассылки", "Юнит-экономика"],
+  },
+  {
+    title: "ИИ-контент",
+    tag: "ai" as Tag,
+    image: "/work/skills/content.webp",
+    tint: "#3FB8A6",
+    tags: ["ИИ-персонаж", "Ролики", "Озвучка", "Автопубликация"],
+  },
+  {
+    title: "Маркетинговые материалы",
+    tag: "materials" as Tag,
+    image: "/work/skills/materials.webp",
+    tint: "#8A5CFF",
+    tags: ["Баннеры", "Скриншоты", "Playable", "Лендинги"],
+  },
 ];
 
-export type Store = { kind: "play" | "appstore" | "web"; href: string };
+export type Tag = "dev" | "growth" | "ai" | "materials" | "games";
 
-export type Product = {
+export const tags: { id: Tag; label: string }[] = [
+  { id: "dev", label: "Разработка" },
+  { id: "growth", label: "Продвижение и реклама" },
+  { id: "ai", label: "ИИ" },
+  { id: "materials", label: "Маркетинговые материалы" },
+  { id: "games", label: "Игры" },
+];
+
+export type Link = { label: string; href: string };
+
+export type Media =
+  | { kind: "image"; src: string; w: number; h: number; caption?: string; small?: boolean }
+  | { kind: "video"; src: string; poster: string; w: number; h: number; caption?: string }
+  | { kind: "playable"; src: string; caption?: string };
+
+export type GalleryGroup = { title: string; note?: string; items: Media[] };
+
+export type Project = {
   slug: string;
   name: string;
   type: string;
-  icon?: string;
-  status: "live" | "review" | "prod";
-  statusLabel: string;
-  /** One line that says why it matters. */
+  tags: Tag[];
+  /** One line for the home tile. */
   pitch: string;
-  /** The interesting engineering, in plain words. */
-  detail: string;
-  metric?: { value: string; label: string };
-  /** Short proof points, shown on the large bento tiles. */
-  facts?: string[];
+  /** Biggest proof, shown on the tile. */
+  metric: { value: string; label: string };
+  /** What the tile shows: a looping video, a fan of phones, or a wide shot. */
+  cover:
+    | { kind: "video"; src: string; poster: string; sides?: [string, string] }
+    | { kind: "phones"; srcs: string[] }
+    | { kind: "wide"; src: string };
+  /** Tile glow; the products bring the colour, the site stays neutral. */
+  tint: string;
+  task: string;
+  /** Three or four short points, not a paragraph. */
+  did: string[];
+  result: string;
+  metrics: { value: string; label: string }[];
+  gallery: GalleryGroup[];
+  links: Link[];
   tech: string[];
-  stores: Store[];
-  /** Featured products get the large bento tiles. */
-  featured?: boolean;
 };
 
-export const products: Product[] = [
+const img = (slug: string, name: string, w: number, h: number, caption?: string, small?: boolean): Media => ({
+  kind: "image",
+  src: `/work/${slug}/${name}.webp`,
+  w,
+  h,
+  caption,
+  small,
+});
+
+const vid = (slug: string, name: string, caption?: string, w = 720, h = 1280): Media => ({
+  kind: "video",
+  src: `/work/${slug}/${name}.mp4`,
+  poster: `/work/${slug}/${name}.webp`,
+  w,
+  h,
+  caption,
+});
+
+export const projects: Project[] = [
+  {
+    slug: "tutchat",
+    name: "TutChat",
+    type: "Мессенджер без интернета",
+    tags: ["dev", "growth", "materials"],
+    pitch: "Переписка и файлы напрямую с телефона на телефон — без интернета и без сервера",
+    metric: { value: "40 тыс.+", label: "скачиваний" },
+    cover: { kind: "phones", srcs: ["/work/tutchat/files.webp", "/work/tutchat/hero.webp", "/work/tutchat/nearby.webp"] },
+    tint: "#7C5CFF",
+    task: "Дать связь там, где её нет: в горах, в самолёте, при отключениях",
+    did: [
+      "Нативные приложения на Kotlin и Swift",
+      "Связь телефон-телефон по Bluetooth и Wi-Fi Direct, без сервера",
+      "44 языка и оптимизация под поиск в Google Play и App Store",
+      "Лесенка скидок и прямая оплата для России",
+    ],
+    result: "Более 40 тыс. скачиваний и №1 в Google Play по «offline messenger» в 4 странах — весь трафик органический",
+    metrics: [
+      { value: "40 тыс.+", label: "скачиваний, весь трафик органический" },
+      { value: "№1", label: "в поиске Google Play в 4 странах" },
+      { value: "~560", label: "посетителей в день из поиска" },
+    ],
+    gallery: [
+      {
+        title: "Скриншоты для магазинов приложений",
+        items: [
+          img("tutchat", "hero", 739, 1600),
+          img("tutchat", "files", 739, 1600),
+          img("tutchat", "nearby", 739, 1600),
+          img("tutchat", "privacy", 739, 1600),
+        ],
+      },
+      {
+        title: "ИИ-ролик",
+        items: [vid("tutchat", "reel-plane", "Самолёт: файлы без связи")],
+      },
+    ],
+    links: [
+      { label: "tutchat.ru", href: "https://tutchat.ru" },
+      { label: "Google Play", href: "https://play.google.com/store/apps/details?id=com.tutchat.app" },
+      { label: "App Store", href: "https://apps.apple.com/ru/app/tutchat/id6756493585" },
+    ],
+    tech: ["Kotlin", "Swift", "Bluetooth / Wi-Fi Direct", "Google Play Billing", "Robokassa", "ASO"],
+  },
+  {
+    slug: "gus",
+    name: "ИИ-ролики с дедом Гасом",
+    type: "ИИ-видео для рекламы приложений",
+    tags: ["ai", "growth"],
+    pitch: "Постоянный ИИ-персонаж для коротких роликов всего портфеля приложений",
+    metric: { value: "63%", label: "удержание на YouTube" },
+    cover: {
+      kind: "video",
+      src: "/work/gus/pillow.mp4",
+      poster: "/work/gus/pillow.webp",
+      sides: ["/work/gus/sprint.webp", "/work/gus/cat.webp"],
+    },
+    tint: "#3FB8A6",
+    task: "Ролики с экраном приложения не цепляли: удержание 17–19%",
+    did: [
+      "Придумал постоянного ИИ-персонажа — невозмутимого деда в костюме 90-х посреди абсурда",
+      "Сцены генерирую в Google Vids, скрипт вставляет в телефон деда запись приложения",
+      "Озвучка, субтитры и концовка со ссылками на скачивание добавляются автоматически",
+      "Один хук работает для разных приложений и языков",
+    ],
+    result: "Удержание выросло до 63% — в 3,5 раза. Ролики на трёх языках сами выходят в YouTube, Instagram и Facebook",
+    metrics: [
+      { value: "63%", label: "удержание против 17–19% у обычных роликов" },
+      { value: "3", label: "языка: английский, испанский, португальский" },
+      { value: "3", label: "площадки с автопубликацией" },
+    ],
+    gallery: [
+      {
+        title: "Ролики",
+        note: "Хук с дедом → запись приложения в его телефоне → концовка со ссылками на скачивание",
+        items: [
+          vid("gus", "pillow", "Подушка → StopTime"),
+          vid("gus", "sprint", "Стадион → StopTime"),
+          vid("gus", "cat", "Кот и ваза → StopTime"),
+          vid("gus", "barber", "Барбершоп → Block Pop"),
+        ],
+      },
+    ],
+    links: [{ label: "Смотреть на YouTube", href: "https://youtube.com/shorts/YiyymAXRtTM" }],
+    tech: ["Google Vids", "Python", "ffmpeg", "Озвучка и субтитры", "YouTube / Instagram API", "Linux, systemd"],
+  },
   {
     slug: "foodino",
     name: "Foodino",
-    type: "Ordering SaaS for food businesses",
-    status: "prod",
-    statusLabel: "In production",
-    pitch: "A whole ordering platform for small food businesses — storefront, kitchen, admin — running with paying customers.",
-    detail:
-      "Every venue gets a branded PWA storefront on its own subdomain, guests track their order status live, and staff work a real-time order feed. Behind it: a .NET service on PostgreSQL, a self-hosted CI runner, staging and production, backups and uptime monitoring. Menus can be imported straight from a photo — Vision OCR into an LLM, then into the catalogue.",
-    metric: { value: "Live", label: "paying customers" },
-    facts: ["Branded storefront per venue", "Live order tracking", "Menu import from a photo"],
-    tech: ["C# / .NET", "PostgreSQL", "Dapper", "Next.js", "Flutter", "Linux / CI"],
-    stores: [{ kind: "web", href: "https://foodino.ru" }],
-    featured: true,
+    type: "SaaS приёма заказов для кафе",
+    tags: ["dev", "ai", "growth"],
+    pitch: "Своя страница заказов для кафе, приложение для персонала, ИИ-меню по фото и ИИ-агент продаж",
+    metric: { value: "59", label: "заказов у клиента за первый месяц" },
+    cover: { kind: "wide", src: "/work/foodino/storefront.webp" },
+    tint: "#FF6B34",
+    task: "Кафе принимают заказы по телефону, а агрегаторы берут большую комиссию",
+    did: [
+      "Своя витрина заказов на поддомене для каждого заведения",
+      "Приложение для персонала на Android и iOS: заказ приходит звонком",
+      "ИИ переносит меню по фото: OCR → YandexGPT → готовое меню с размерами",
+      "ИИ-агент сам находит кафе, пишет им и разбирает ответы",
+    ],
+    result: "Клиент на доставке обедов получил 59 заказов за первый месяц. Агент отобрал 77 подходящих кафе из 941, письмо стоит $0.003",
+    metrics: [
+      { value: "59", label: "заказов у клиента за первый месяц" },
+      { value: "941 → 77", label: "заведений после отсева агентом" },
+      { value: "$0.003", label: "цена письма вместо $0.02" },
+    ],
+    gallery: [
+      {
+        title: "Витрина для гостей",
+        items: [
+          img("foodino", "storefront", 1280, 699, "Витрина заведения на десктопе"),
+          img("foodino", "dish", 760, 1045, "Блюдо с размерами и соусами"),
+          img("foodino", "client-mobile", 500, 1000, "Живой клиент «Щедрый вкус» на телефоне"),
+        ],
+      },
+      {
+        title: "Приложение для заведения",
+        items: [
+          img("foodino", "app-order", 739, 1600, "Входящий заказ"),
+          img("foodino", "app-feed", 739, 1600, "Лента заказов и выручка"),
+        ],
+      },
+      {
+        title: "Продвижение",
+        items: [img("foodino", "promo", 1400, 1050, "Рекламная карточка")],
+      },
+    ],
+    links: [
+      { label: "foodino.ru", href: "https://foodino.ru" },
+      { label: "Живой клиент", href: "https://schedry-vkus.foodino.ru" },
+      { label: "Демо-кафе", href: "https://demo.foodino.ru" },
+    ],
+    tech: ["C# / .NET", "PostgreSQL", "Flutter", "Yandex Cloud: OCR и YandexGPT", "Python", "Linux, nginx, CI"],
   },
   {
     slug: "stoptime",
     name: "StopTime",
-    type: "Precision timing game",
-    icon: "/apps/StopTimeIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "A one-tap game that turned into a live-ops product: online duels, parties, seasons, leaderboards.",
-    detail:
-      "Duels and rooms run on Firebase with rules tight enough that a modified client can't post a fake score. Leaderboards use weekly and monthly buckets so they stay cheap as players pile up. Everything after launch is driven by BigQuery: the onboarding rewrite took tutorial completion to 84%, and the monetization mix is tuned against real ARPDAU, not guesses.",
-    metric: { value: "419", label: "players a day" },
-    facts: [
-      "Real-time duels and party rooms",
-      "Cheat-resistant score submission",
-      "84% tutorial completion after rewrite",
+    type: "Игра на чувство времени",
+    tags: ["games", "dev", "growth", "materials"],
+    pitch: "Игра из одной механики, выросшая в живой продукт: дуэли, турниры, рейтинги и 27 языков",
+    metric: { value: "10 тыс.+", label: "скачиваний" },
+    cover: { kind: "phones", srcs: ["/work/stoptime/party.webp", "/work/stoptime/hero.webp", "/work/stoptime/modes.webp"] },
+    tint: "#3D7BFF",
+    task: "Игра из одной механики должна удерживать игроков и зарабатывать",
+    did: [
+      "8 режимов, онлайн-дуэли, турниры и режим компании на одном телефоне",
+      "Глобальный рейтинг, аватары и серии",
+      "27 языков с поддержкой RTL",
+      "Оптимизация страницы в Google Play и A/B-тесты, решения по данным BigQuery",
     ],
-    tech: ["Flutter", "Firebase", "BigQuery", "IAP", "Ad mediation"],
-    stores: [
-      { kind: "play", href: "https://play.google.com/store/apps/details?id=com.stoptime.app" },
-      { kind: "appstore", href: "https://apps.apple.com/ru/app/stoptime-time-perception-game/id6772400704" },
+    result: "Более 10 тыс. скачиваний и до 900 игроков в день. Новая иконка дала +20% установок",
+    metrics: [
+      { value: "10 тыс.+", label: "скачиваний" },
+      { value: "+20%", label: "установок от новой иконки" },
+      { value: "27", label: "языков, включая арабский с RTL" },
     ],
-    featured: true,
-  },
-  {
-    slug: "attic",
-    name: "Attic",
-    type: "Photo cleanup",
-    icon: "/apps/AtticIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "Swipe your camera roll clean. Nine shots of the same sunset arrive as one decision.",
-    detail:
-      "Sorting happens entirely on device — no accounts, no uploads. Nothing is deleted until you confirm; everything waits in an archive one tap away. Shipped in 27 languages in a single release, store listings included, with the listings themselves rebuilt from ASO research rather than guesswork.",
-    metric: { value: "27", label: "languages" },
-    tech: ["Flutter", "Platform channels", "l10n", "ASO"],
-    stores: [
-      { kind: "appstore", href: "https://apps.apple.com/us/app/attic-photo-cleaner-swipe/id6797534856" },
-      { kind: "play", href: "https://play.google.com/store/apps/details?id=com.mikitari.attic" },
-      { kind: "web", href: "https://attic.mikitari.com/" },
+    gallery: [
+      {
+        title: "Скриншоты для магазинов приложений",
+        items: [
+          img("stoptime", "hero", 900, 1600),
+          img("stoptime", "gameplay", 900, 1600),
+          img("stoptime", "home", 900, 1600),
+          img("stoptime", "party", 900, 1600),
+          img("stoptime", "modes", 900, 1600),
+        ],
+      },
+      {
+        title: "A/B-тест иконки",
+        note: "Google Play, 359 установок против 300",
+        items: [
+          img("stoptime", "icon-a", 1254, 1254, "Было", true),
+          img("stoptime", "icon-b", 1254, 1254, "Стало: +20% установок", true),
+        ],
+      },
+      {
+        title: "Аватары и серии",
+        items: [img("stoptime", "skins", 1254, 1254, undefined, true)],
+      },
     ],
-    featured: true,
-  },
-  {
-    slug: "tutchat",
-    name: "TutChat",
-    type: "Offline file transfer",
-    icon: "/apps/TutChatIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "Send files and messages between phones with no internet at all.",
-    detail:
-      "Direct device-to-device transfer over local wireless, hardened against the failure modes real hardware produces — dropped groups, stale sockets, silent stalls. Transfers queue behind a watchdog and retry visibly instead of failing quietly. iOS reached feature parity on a different transport stack.",
-    tech: ["Flutter", "Wi-Fi Direct", "Kotlin", "Swift"],
-    stores: [
-      { kind: "play", href: "https://play.google.com/store/apps/details?id=com.tutchat.app" },
-      { kind: "appstore", href: "https://apps.apple.com/ru/app/tutchat/id6756493585" },
+    links: [
+      { label: "Google Play", href: "https://play.google.com/store/apps/details?id=com.stoptime.app" },
+      { label: "App Store", href: "https://apps.apple.com/ru/app/stoptime-time-perception-game/id6772400704" },
     ],
-  },
-  {
-    slug: "collapse",
-    name: "Tap Away",
-    type: "Block puzzle",
-    icon: "/apps/CollapseIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "A tap-to-clear puzzle whose real story is the analytics behind it.",
-    detail:
-      "A GA4 and BigQuery rebuild showed exactly where players left and which market actually paid — 59% of users and 99% of revenue came from one country. That answer decided the roadmap: no paid traffic, no IAP, a store-listing experiment read from impressions instead of installs.",
-    metric: { value: "228", label: "monthly players" },
-    tech: ["Flutter", "GA4", "BigQuery", "ASO"],
-    stores: [
-      { kind: "play", href: "https://play.google.com/store/apps/details?id=com.mikitari.collapse" },
-      { kind: "appstore", href: "https://apps.apple.com/us/app/collapse-tap-away-puzzle/id6794567220" },
-    ],
+    tech: ["Flutter", "Firebase", "BigQuery", "A/B-тесты Google Play", "ASO"],
   },
   {
     slug: "memorizepath",
     name: "MemorizePath",
-    type: "Memory training",
-    icon: "/apps/MemorizePathIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "Path-memory drills that grew into a brain-training product with timed run modes.",
-    detail:
-      "Shipped on both stores plus RuStore, with a monetization ladder and an ad-mediation stack that had to work in markets where the usual networks don't.",
-    tech: ["Flutter", "Firebase", "Ad mediation"],
-    stores: [
-      { kind: "play", href: "https://play.google.com/store/apps/details?id=com.memorizepath.android" },
-      { kind: "appstore", href: "https://apps.apple.com/ru/app/memorizepath-memory-game/id6760545214" },
+    type: "Игры на память",
+    tags: ["games", "growth", "materials"],
+    pitch: "Пять мини-игр на память и полный набор рекламы к ним: ролики, баннеры, playable",
+    metric: { value: "38", label: "рекламных креативов" },
+    cover: { kind: "phones", srcs: ["/work/memorizepath/path.webp", "/work/memorizepath/hero.webp", "/work/memorizepath/modes.webp"] },
+    tint: "#8A5CFF",
+    task: "Продвигать мини-игры рекламой в разных форматах и сетях",
+    did: [
+      "Приложения на Kotlin и SwiftUI с пятью режимами",
+      "38 рекламных креативов: 20 роликов, 15 баннеров и 3 playable",
+      "Каждый креатив в трёх форматах: 9:16, 1:1 и 16:9 / 1200×628",
+      "Playable — игра одним HTML-файлом ~300 КБ с MRAID для рекламных сетей",
+      "Кампании в Google Ads на установки с тестом стран",
     ],
-  },
-  {
-    slug: "blockpop",
-    name: "Block Pop",
-    type: "Block puzzle",
-    icon: "/apps/BlockPopIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "Built, monetized and released as one compact production run.",
-    detail:
-      "Daily goals and star progression tuned through playtesting, with a rewarded-ad economy wired in without breaking the core loop.",
-    tech: ["Flutter", "Ad mediation"],
-    stores: [{ kind: "play", href: "https://play.google.com/store/apps/details?id=com.mikitari.blockpop" }],
-  },
-  {
-    slug: "lastmoment",
-    name: "Last Moment",
-    type: "Reflex game",
-    icon: "/apps/LastMomentIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "A reflex game with a mascot-led redesign and a full analytics rebuild.",
-    detail:
-      "Both platforms run the same monetization stack; the redesign around the Miki mascot went out alongside it.",
-    tech: ["Flutter", "Analytics", "Billing"],
-    stores: [
-      { kind: "play", href: "https://play.google.com/store/apps/details?id=com.lastmoment.app" },
-      { kind: "appstore", href: "https://apps.apple.com/us/app/last-moment-reflex-game/id6761336734" },
+    result: "38 рекламных креативов во всех форматах сетей — три playable можно пройти прямо на этой странице",
+    metrics: [
+      { value: "38", label: "креативов: 20 роликов, 15 баннеров, 3 playable" },
+      { value: "~300 КБ", label: "playable целиком в одном файле" },
+      { value: "3", label: "формата на каждый креатив" },
     ],
+    gallery: [
+      {
+        title: "Playable-реклама",
+        note: "Можно пройти прямо здесь. Кнопка «Install» ведёт в Google Play",
+        items: [
+          { kind: "playable", src: "https://mikitari.com/playables/memorizepath-path/", caption: "Запомни путь" },
+          { kind: "playable", src: "https://mikitari.com/playables/memorizepath-colors/", caption: "Запомни цвета" },
+          { kind: "playable", src: "https://mikitari.com/playables/memorizepath-focus/", caption: "Найди лишнюю плитку" },
+        ],
+      },
+      {
+        title: "Рекламные ролики",
+        note: "Каждый ролик собран в 9:16, 1:1 и 16:9",
+        items: [
+          vid("memorizepath", "ad", "Все режимы, 9:16"),
+          vid("memorizepath", "colors-9x16", "Цвета, 9:16"),
+          vid("memorizepath", "focus-9x16", "Внимание, 9:16"),
+          vid("memorizepath", "combo6-9x16", "Короткая нарезка, 9:16"),
+          vid("memorizepath", "combo-1x1", "Все режимы, 1:1", 960, 960),
+        ],
+      },
+      {
+        title: "Баннеры",
+        note: "Одна система на пять игр в форматах 1:1, 4:5 и 1200×628",
+        items: [
+          img("memorizepath", "banner-path-1200x1500", 960, 1200),
+          img("memorizepath", "banner-colors-1200x1500", 960, 1200),
+          img("memorizepath", "banner-brand-1200x1200", 1200, 1200),
+          img("memorizepath", "banner-schulte-1200x1200", 1200, 1200),
+          img("memorizepath", "banner-focus-1200x628", 1200, 628),
+          img("memorizepath", "banner-colors-1200x628", 1200, 628),
+        ],
+      },
+      {
+        title: "Скриншоты для магазинов приложений",
+        items: [
+          img("memorizepath", "hero", 739, 1600),
+          img("memorizepath", "modes", 739, 1600),
+          img("memorizepath", "path", 739, 1600),
+          img("memorizepath", "colors", 739, 1600),
+          img("memorizepath", "schulte", 739, 1600),
+        ],
+      },
+    ],
+    links: [
+      { label: "Google Play", href: "https://play.google.com/store/apps/details?id=com.memorizepath.android" },
+      { label: "App Store", href: "https://apps.apple.com/ru/app/memorizepath-memory-game/id6760545214" },
+    ],
+    tech: ["Kotlin", "SwiftUI", "HTML5 Canvas", "MRAID", "Firebase"],
   },
   {
-    slug: "bridges",
-    name: "Bridges",
-    type: "Logic puzzle",
-    icon: "/apps/BridgesIcon.webp",
-    status: "live",
-    statusLabel: "Live",
-    pitch: "Classic hashi puzzles with a generator that guarantees a unique solution.",
-    detail: "Shipped on Google Play with its own Firebase project and crash reporting.",
-    tech: ["Flutter", "Firebase"],
-    stores: [{ kind: "play", href: "https://play.google.com/store/apps/details?id=com.mikitari.bridges" }],
+    slug: "attic",
+    name: "Attic",
+    type: "Чистка галереи свайпами, по подписке",
+    tags: ["dev", "growth", "materials"],
+    pitch: "Разобрать тысячи фото за вечер: влево — в архив, вправо — оставить",
+    metric: { value: "27", label: "языков" },
+    cover: { kind: "phones", srcs: ["/work/attic/archive.webp", "/work/attic/hero.webp", "/work/attic/keep.webp"] },
+    tint: "#F2994A",
+    task: "Тысячи похожих фото в телефоне, а разбирать их по одному скучно",
+    did: [
+      "Свайп влево — в архив, вправо — оставить",
+      "Группировка похожих снимков и счётчик освобождённого места",
+      "Подписка с триалом через RevenueCat",
+      "Приложение и сайт на 27 языках, автоматические ролики для соцсетей",
+    ],
+    result: "Работает по подписке в App Store и Google Play",
+    metrics: [
+      { value: "27", label: "языков в приложении и на сайте" },
+      { value: "iOS + Android", label: "одна кодовая база" },
+      { value: "Подписка", label: "с триалом через RevenueCat" },
+    ],
+    gallery: [
+      {
+        title: "Скриншоты для магазинов приложений",
+        items: [
+          img("attic", "hero", 900, 1600),
+          img("attic", "archive", 900, 1600),
+          img("attic", "keep", 900, 1600),
+          img("attic", "freed", 900, 1600),
+        ],
+      },
+    ],
+    links: [
+      { label: "App Store", href: "https://apps.apple.com/us/app/attic-photo-cleaner-swipe/id6797534856" },
+      { label: "Google Play", href: "https://play.google.com/store/apps/details?id=com.mikitari.attic" },
+    ],
+    tech: ["Flutter", "RevenueCat", "Firebase", "Python + ffmpeg для роликов"],
+  },
+  {
+    slug: "nammu",
+    name: "Nammu",
+    type: "Сайты для местного бизнеса",
+    tags: ["dev", "ai", "growth"],
+    pitch: "Сайт под конкретный салон или кафе по данным из их карточек и соцсетей",
+    metric: { value: "11", label: "сайтов запущено" },
+    cover: { kind: "wide", src: "/work/nammu/desktop.webp" },
+    tint: "#B08A6E",
+    task: "У салонов и кафе часто нет сайта — только VK и 2ГИС",
+    did: [
+      "Собираю фото, прайс и отзывы из карточек и соцсетей",
+      "Тексты и дизайн готовлю с ИИ, сайт выходит на своём поддомене с SSL",
+      "Клиентов находит тот же ИИ-агент, что и для Foodino",
+    ],
+    result: "Сайт салона «ПараЛиний» собран для клиента из рассылки и работает",
+    metrics: [
+      { value: "11", label: "сайтов запущено" },
+      { value: "Свой поддомен", label: "и SSL для каждого" },
+    ],
+    gallery: [
+      {
+        title: "Салон «ПараЛиний»",
+        items: [img("nammu", "desktop", 1280, 800, "Десктоп"), img("nammu", "mobile", 375, 812, "Телефон")],
+      },
+    ],
+    links: [
+      { label: "Открыть сайт", href: "https://paralinii.nammu.ru" },
+      { label: "nammu.ru", href: "https://nammu.ru" },
+    ],
+    tech: [".NET", "HTML / CSS", "Python", "Linux, nginx", "Let's Encrypt"],
+  },
+  {
+    slug: "puzzles",
+    name: "Collapse и Block Pop",
+    type: "Казуальные головоломки",
+    tags: ["games", "materials"],
+    pitch: "Две головоломки с рекламной монетизацией и решениями по юнит-экономике",
+    metric: { value: "$0.04", label: "LTV установки против CPI $1–3" },
+    cover: { kind: "phones", srcs: ["/work/puzzles/collapse-3.webp", "/work/puzzles/collapse-1.webp", "/work/puzzles/collapse-2.webp"] },
+    tint: "#4FC3F7",
+    task: "Проверить жанр казуальных головоломок с монетизацией рекламой",
+    did: [
+      "Collapse: снять все блоки, тапая по группам, с льдом, бомбами и стенами",
+      "Block Pop: блоки с комбо и рекордами",
+      "Реклама с медиацией, аналитика в Firebase и BigQuery",
+    ],
+    result: "LTV установки $0.04 против CPI $1–3 — решил не покупать трафик в минус",
+    metrics: [
+      { value: "$0.04", label: "LTV установки" },
+      { value: "$1–3", label: "CPI в США — закупка не окупится" },
+    ],
+    gallery: [
+      {
+        title: "Collapse",
+        items: [
+          img("puzzles", "collapse-banner", 1024, 500),
+          img("puzzles", "collapse-1", 740, 1600),
+          img("puzzles", "collapse-2", 740, 1600),
+          img("puzzles", "collapse-3", 740, 1600),
+        ],
+      },
+      {
+        title: "Block Pop",
+        items: [
+          img("puzzles", "blockpop-1", 739, 1600),
+          img("puzzles", "blockpop-2", 739, 1600),
+          img("puzzles", "blockpop-3", 739, 1600),
+        ],
+      },
+    ],
+    links: [
+      { label: "Collapse в Google Play", href: "https://play.google.com/store/apps/details?id=com.mikitari.collapse" },
+      { label: "Block Pop в Google Play", href: "https://play.google.com/store/apps/details?id=com.mikitari.blockpop" },
+    ],
+    tech: ["Flutter", "Медиация рекламы", "Firebase", "BigQuery"],
   },
 ];
 
-/** Icons for the "everything shipped" tile. */
-export const shippedIcons = products.filter((p) => p.icon).map((p) => ({ name: p.name, icon: p.icon! }));
-
-export const capabilities = [
-  {
-    title: "Mobile apps, end to end",
-    body: "Flutter for Android and iOS — empty repo to released build, store listing, and the analytics that say whether it worked. I have been through review rejections, billing migrations and mediation swaps, and I know what they cost.",
-  },
-  {
-    title: "Backends that get operated",
-    body: ".NET on PostgreSQL, deployed on Linux with CI, monitoring and backups. Built by someone who is also on call for them.",
-  },
-  {
-    title: "Web & storefronts",
-    body: "Next.js sites, PWAs, admin panels. Static where it can be, dynamic where it has to be, fast either way.",
-  },
-  {
-    title: "The growth plumbing",
-    body: "Funnels, retention, monetization, store optimization. The unglamorous layer that decides whether a good product earns anything.",
-  },
-];
-
-export const stack: { group: string; items: string[] }[] = [
-  { group: "Mobile", items: ["Flutter", "Dart", "Kotlin", "Swift", "Play Console", "App Store Connect"] },
-  { group: "Backend", items: ["C#", ".NET", "PostgreSQL", "Dapper", "REST", "Firebase"] },
-  { group: "Web", items: ["TypeScript", "Next.js", "React", "Tailwind", "PWA"] },
-  { group: "Infra", items: ["Linux", "Nginx", "GitHub Actions", "Self-hosted CI", "Backups", "Monitoring"] },
-  { group: "Product", items: ["GA4", "BigQuery", "A/B tests", "ASO", "IAP", "Ad mediation"] },
-];
-
-/**
- * Entries whose period is "TODO" are filtered out before rendering — fill in
- * real roles here and they appear on the site automatically.
- */
-export const experience = [
-  {
-    period: "2023 — now",
-    title: "Independent developer",
-    org: "Own products & client work",
-    body: "Building and operating a portfolio of mobile apps and a SaaS product for food businesses. Architecture, implementation, releases, analytics and revenue — all of it.",
-  },
-  {
-    period: "TODO",
-    title: "TODO — role",
-    org: "TODO — company",
-    body: "TODO — what you owned, and what changed because of it.",
-  },
-  {
-    period: "TODO",
-    title: "TODO — role",
-    org: "TODO — company",
-    body: "TODO — what you owned, and what changed because of it.",
-  },
-];
-
-/** Only fully written entries reach the page. */
-export const publishedExperience = experience.filter((job) => job.period !== "TODO");
-
-export const nav = [
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
-  { label: "Stack", href: "#stack" },
-  { label: "Contact", href: "#contact" },
-];
+export const experience = {
+  title: "Опыт",
+  items: [
+    { period: "Сейчас", text: "Свои продукты: студия приложений Miki Tari, SaaS Foodino, сайты Nammu" },
+    { period: "8 лет", text: "Коммерческая разработка: бэкенд на .NET, корпоративные системы, интеграции, мониторинг" },
+  ],
+};
