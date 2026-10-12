@@ -78,15 +78,15 @@ export function WorkGrid() {
         })}
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid auto-rows-fr gap-5 md:grid-cols-2">
         {shown.map((p, i) => (
-          <Reveal key={p.slug} delay={(i % 2) * 110}>
+          <Reveal key={p.slug} delay={(i % 2) * 110} className="h-full">
             <Link
               href={`/work/${p.slug}/`}
-              className="panel group block transition-[translate,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-28px_rgba(0,0,0,.4)]"
+              className="panel group flex h-full flex-col transition-[translate,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-28px_rgba(0,0,0,.4)]"
             >
               <Cover project={p} />
-              <div className="border-t border-line p-5 sm:p-6">
+              <div className="flex flex-1 flex-col border-t border-line p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <h3 className="font-display text-[20px] font-semibold leading-tight tracking-[-0.02em] text-fg">
@@ -103,7 +103,7 @@ export function WorkGrid() {
                     >
                       {p.metric.value}
                     </div>
-                    <div className="mt-1 max-w-[150px] text-[11.5px] leading-tight text-fg-3">
+                    <div className="mt-1 max-w-[160px] text-[11.5px] leading-tight text-fg-3 [text-wrap:balance]">
                       {p.metric.label}
                     </div>
                   </div>
@@ -111,7 +111,7 @@ export function WorkGrid() {
                 <p className="mt-3 text-[14.5px] leading-relaxed text-fg-2">
                   {p.pitch}
                 </p>
-                <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-4">
                   {p.tags.map((t) => (
                     <span
                       key={t}

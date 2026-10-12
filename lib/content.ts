@@ -457,7 +457,7 @@ export const projects: Project[] = [
     type: "Казуальные головоломки",
     tags: ["games", "materials"],
     pitch: "Две головоломки с рекламной монетизацией и решениями по юнит-экономике",
-    metric: { value: "$0.04", label: "LTV установки против CPI $1–3" },
+    metric: { value: "$0.04", label: "LTV против CPI\u00a0$1–3" },
     cover: { kind: "phones", srcs: ["/work/puzzles/collapse-3.webp", "/work/puzzles/collapse-1.webp", "/work/puzzles/collapse-2.webp"] },
     tint: "#4FC3F7",
     task: "Проверить жанр казуальных головоломок с монетизацией рекламой",
