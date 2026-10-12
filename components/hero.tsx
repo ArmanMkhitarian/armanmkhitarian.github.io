@@ -76,7 +76,7 @@ export function Hero() {
                 <div className="font-display text-[26px] font-semibold leading-none tracking-[-0.02em] text-fg">
                   <CountUp value={f.value} />
                 </div>
-                <div className="mt-1.5 text-[14px] leading-snug text-fg-3">
+                <div className="mt-1.5 text-[14px] leading-snug text-fg">
                   {f.label}
                 </div>
               </div>

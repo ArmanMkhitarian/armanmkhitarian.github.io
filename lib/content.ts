@@ -18,8 +18,8 @@ export const site = {
 export const hero = {
   intro: "Создаю мобильные и веб-приложения и помогаю им расти с помощью рекламы и AI-контента",
   facts: [
-    { icon: "/work/skills/icon-downloads.webp", value: "50 тыс.+", label: "скачиваний моих приложений" },
-    { icon: "/work/skills/icon-apps.webp", value: "9", label: "приложений в Google Play и App Store" },
+    { icon: "/work/skills/icon-downloads.webp", value: "50 тыс.+ скачиваний", label: "моих приложений" },
+    { icon: "/work/skills/icon-apps.webp", value: "9 приложений", label: "в Google Play и App Store" },
     { icon: "/work/skills/icon-experience.webp", value: "8 лет", label: "в коммерческой разработке" },
   ],
 };
