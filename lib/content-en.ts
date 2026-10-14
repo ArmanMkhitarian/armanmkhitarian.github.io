@@ -4,7 +4,7 @@ import { img, vid, type Content } from "./content-shared";
 export const en: Content = {
   locale: "en",
   site: {
-    name: "Arman Mkhitaryan",
+    name: "Arman Mkhitarian",
     role: "Product Engineer",
     email: "arman.mkhitaryan.1997@mail.ru",
     telegram: "https://t.me/armanmkhitarian",
