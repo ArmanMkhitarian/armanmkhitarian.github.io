@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+
+const { site } = getContent("ru");
 
 export const dynamic = "force-static";
 

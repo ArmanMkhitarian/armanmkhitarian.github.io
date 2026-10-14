@@ -1,8 +1,10 @@
-import { experience } from "@/lib/content";
-import { ContactIcon, contacts } from "./contacts";
+import { getContent, type Locale } from "@/lib/content";
+import { ContactIcon, getContacts } from "./contacts";
 
 /** Experience in two lines, then the same three ways to get in touch. */
-export function SiteFooter() {
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const { experience, ui } = getContent(locale);
+  const contacts = getContacts(locale);
   return (
     <footer id="contact" className="border-t border-line bg-surface/40">
       <div className="rail grid gap-10 py-12 md:grid-cols-[1.4fr_1fr]">
@@ -10,7 +12,10 @@ export function SiteFooter() {
           <div className="mono-label">{experience.title}</div>
           <ul className="mt-4 space-y-3">
             {experience.items.map((item) => (
-              <li key={item.period} className="flex gap-4 text-[14.5px] leading-relaxed">
+              <li
+                key={item.period}
+                className="flex gap-4 text-[14.5px] leading-relaxed"
+              >
                 <span className="w-16 shrink-0 text-fg-3">{item.period}</span>
                 <span className="text-fg-2">{item.text}</span>
               </li>
@@ -18,7 +23,7 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="mono-label">Связаться</div>
+          <div className="mono-label">{ui.contact}</div>
           <ul className="mt-4 space-y-2.5 text-[14.5px]">
             {contacts.map((c) => (
               <li key={c.label}>

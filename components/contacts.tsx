@@ -1,4 +1,4 @@
-import { site } from "@/lib/content";
+import { getContent, type Locale } from "@/lib/content";
 
 const icons = {
   telegram: (
@@ -13,15 +13,46 @@ const icons = {
 };
 
 /** Telegram, LinkedIn, mail — shared by the header and the footer. */
-export const contacts = [
-  { label: "Telegram", text: `Telegram ${site.telegramHandle}`, href: site.telegram, icon: icons.telegram },
-  { label: "LinkedIn", text: "LinkedIn", href: site.linkedin, icon: icons.linkedin },
-  { label: "Почта", text: site.email, href: `mailto:${site.email}`, icon: icons.mail },
-];
+export function getContacts(locale: Locale) {
+  const { site, ui } = getContent(locale);
+  return [
+    {
+      label: "Telegram",
+      text: `Telegram ${site.telegramHandle}`,
+      href: site.telegram,
+      icon: icons.telegram,
+    },
+    {
+      label: "LinkedIn",
+      text: "LinkedIn",
+      href: site.linkedin,
+      icon: icons.linkedin,
+    },
+    {
+      label: ui.email,
+      text: site.email,
+      href: `mailto:${site.email}`,
+      icon: icons.mail,
+    },
+  ];
+}
 
-export function ContactIcon({ icon, size = 17 }: { icon: React.ReactNode; size?: number }) {
+export function ContactIcon({
+  icon,
+  size = 17,
+}: {
+  icon: React.ReactNode;
+  size?: number;
+}) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" className="shrink-0">
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="currentColor"
+      aria-hidden="true"
+      className="shrink-0"
+    >
       {icon}
     </svg>
   );

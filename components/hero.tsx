@@ -1,10 +1,11 @@
-import { hero, site } from "@/lib/content";
+import { getContent, type Locale } from "@/lib/content";
 import { CountUp } from "./count-up";
 import { ScrollScrub } from "./scroll-scrub";
 import { SkillCards } from "./skill-cards";
 
 /** A portfolio opening: name and one line on the left, the facts on the right, then the four things he does. */
-export function Hero() {
+export function Hero({ locale }: { locale: Locale }) {
+  const { hero, site } = getContent(locale);
   return (
     <>
       <section className="rail grid items-center gap-8 pt-12 sm:pt-16 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
@@ -86,7 +87,7 @@ export function Hero() {
       </section>
 
       <section className="rail pt-10">
-        <SkillCards />
+        <SkillCards locale={locale} />
       </section>
     </>
   );

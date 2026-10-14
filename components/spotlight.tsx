@@ -6,7 +6,13 @@ import { useEffect, useRef, type ReactNode } from "react";
  * Feeds every `.panel` inside it the pointer position, so panels can draw a
  * highlight that follows the cursor along their border. Skipped on touch.
  */
-export function Spotlight({ children, className }: { children: ReactNode; className?: string }) {
+export function Spotlight({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 "use client";
 
 import type { PointerEvent } from "react";
-import { skills } from "@/lib/content";
+import { getContent, type Locale, type Tag } from "@/lib/content";
 import { Reveal } from "./reveal";
 import { setWorkFilter } from "./work-grid";
 
@@ -25,8 +25,9 @@ function untilt(e: PointerEvent<HTMLButtonElement>) {
 }
 
 /** The four disciplines; each one filters the work below and scrolls to it. */
-export function SkillCards() {
-  const open = (tag: (typeof skills)[number]["tag"]) => {
+export function SkillCards({ locale }: { locale: Locale }) {
+  const { skills, ui } = getContent(locale);
+  const open = (tag: Tag) => {
     setWorkFilter(tag);
     document.getElementById("work")?.scrollIntoView({ block: "start" });
   };
@@ -55,10 +56,14 @@ export function SkillCards() {
               <h3 className="font-display text-[15.5px] font-semibold leading-tight tracking-[-0.01em] text-fg">
                 {s.title}
               </h3>
-              <p className="mt-1.5 text-[12.5px] leading-snug text-fg-3">{s.tags.join(" · ")}</p>
+              <p className="mt-1.5 text-[12.5px] leading-snug text-fg-3">
+                {s.tags.join(" · ")}
+              </p>
               <span className="mt-auto inline-flex items-center gap-1 pt-3 text-[13px] font-medium text-fg-2 transition-colors group-hover:text-accent">
-                Смотреть проекты
-                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                {ui.seeProjects}
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  →
+                </span>
               </span>
             </div>
           </button>

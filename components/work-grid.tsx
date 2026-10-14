@@ -2,14 +2,11 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { projects, tags, type Tag } from "@/lib/content";
+import { getContent, localePath, type Locale, type Tag } from "@/lib/content";
 import { Cover } from "./cover";
 import { Reveal } from "./reveal";
 
-const tagLabel = Object.fromEntries(tags.map((t) => [t.id, t.label])) as Record<
-  Tag,
-  string
->;
+const tagIds: Tag[] = ["dev", "growth", "ai", "materials", "games"];
 
 const EVENT = "work-filter";
 
@@ -24,7 +21,7 @@ function subscribe(onChange: () => void) {
 
 function readFilter(): Tag | null {
   const f = new URLSearchParams(window.location.search).get("f");
-  return f && f in tagLabel ? (f as Tag) : null;
+  return f && tagIds.includes(f as Tag) ? (f as Tag) : null;
 }
 
 /**
@@ -40,7 +37,11 @@ export function setWorkFilter(next: Tag | null) {
   window.dispatchEvent(new Event(EVENT));
 }
 
-export function WorkGrid() {
+export function WorkGrid({ locale }: { locale: Locale }) {
+  const { projects, tags, ui } = getContent(locale);
+  const tagLabel = Object.fromEntries(
+    tags.map((t) => [t.id, t.label]),
+  ) as Record<Tag, string>;
   const filter = useSyncExternalStore(subscribe, readFilter, () => null);
   const choose = setWorkFilter;
 
@@ -53,10 +54,10 @@ export function WorkGrid() {
       <div
         className="mb-6 flex flex-wrap gap-2"
         role="group"
-        aria-label="Фильтр проектов"
+        aria-label={ui.filterAria}
       >
         {[
-          { id: null, label: "Все" } as { id: Tag | null; label: string },
+          { id: null, label: ui.all } as { id: Tag | null; label: string },
           ...tags,
         ].map((t) => {
           const on = filter === t.id;
@@ -82,7 +83,7 @@ export function WorkGrid() {
         {shown.map((p, i) => (
           <Reveal key={p.slug} delay={(i % 2) * 110} className="h-full">
             <Link
-              href={`/work/${p.slug}/`}
+              href={localePath(locale, `/work/${p.slug}/`)}
               className="panel group flex h-full flex-col transition-[translate,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_26px_50px_-28px_rgba(0,0,0,.4)]"
             >
               <Cover project={p} />
@@ -121,7 +122,7 @@ export function WorkGrid() {
                     </span>
                   ))}
                   <span className="ml-auto text-[13px] text-fg-3 transition-colors group-hover:text-accent">
-                    Смотреть →
+                    {ui.see}
                   </span>
                 </div>
               </div>

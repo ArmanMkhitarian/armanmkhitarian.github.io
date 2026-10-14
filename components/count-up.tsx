@@ -6,7 +6,13 @@ import { useEffect, useRef } from "react";
  * Counts the leading number of `value` up from zero on mount ("50 тыс.+" → 0…50 тыс.+).
  * The server renders the final text, so without JS the number is simply there.
  */
-export function CountUp({ value, duration = 1300 }: { value: string; duration?: number }) {
+export function CountUp({
+  value,
+  duration = 1300,
+}: {
+  value: string;
+  duration?: number;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {

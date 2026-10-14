@@ -1,16 +1,18 @@
 import type { MetadataRoute } from "next";
-import { projects, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
 
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    { url: `${site.url}/`, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
-    ...projects.map((p) => ({
-      url: `${site.url}/work/${p.slug}/`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    })),
-  ];
+  const { site, projects } = getContent("ru");
+  const page = (path: string, priority: number) => ({
+    url: `${site.url}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority,
+    alternates: {
+      languages: { ru: `${site.url}${path}`, en: `${site.url}/en${path}` },
+    },
+  });
+  return [page("/", 1), ...projects.map((p) => page(`/work/${p.slug}/`, 0.8))];
 }

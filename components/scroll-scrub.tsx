@@ -24,7 +24,14 @@ type Props = {
  * Ties a transform to scroll position (scrubbed, with a short eased catch-up).
  * Without JS or with reduced motion the markup simply stays where it is.
  */
-export function ScrollScrub({ children, className = "", from, to, start = "top bottom", end = "bottom top" }: Props) {
+export function ScrollScrub({
+  children,
+  className = "",
+  from,
+  to,
+  start = "top bottom",
+  end = "bottom top",
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(

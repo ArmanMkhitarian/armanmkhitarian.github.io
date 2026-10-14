@@ -1,29 +1,15 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { SiteFooter } from "@/components/site-footer";
-import { Reveal } from "@/components/reveal";
-import { SiteHeader } from "@/components/site-header";
-import { projects, tags, type GalleryGroup, type Media } from "@/lib/content";
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const p = projects.find((x) => x.slug === slug);
-  if (!p) return {};
-  return { title: p.name, description: `${p.type}. ${p.pitch}` };
-}
-
-const tagLabel = Object.fromEntries(tags.map((t) => [t.id, t.label]));
+import { SiteFooter } from "./site-footer";
+import { Reveal } from "./reveal";
+import { SiteHeader } from "./site-header";
+import {
+  getContent,
+  localePath,
+  type GalleryGroup,
+  type Locale,
+  type Media,
+  type Project,
+} from "@/lib/content";
 
 const isWide = (m: Media) => m.kind === "image" && m.w / m.h > 1.3;
 
@@ -75,7 +61,13 @@ function StripItem({ m }: { m: Media }) {
   );
 }
 
-function GroupItems({ group }: { group: GalleryGroup }) {
+function GroupItems({
+  group,
+  openSeparately,
+}: {
+  group: GalleryGroup;
+  openSeparately: string;
+}) {
   const wide = group.items.filter(isWide);
   const strip = group.items.filter((m) => !isWide(m));
   return (
@@ -134,7 +126,7 @@ function GroupItems({ group }: { group: GalleryGroup }) {
                           rel="noreferrer"
                           className="link underline-grow"
                         >
-                          открыть отдельно
+                          {openSeparately}
                         </a>
                       </>
                     )}
@@ -149,15 +141,18 @@ function GroupItems({ group }: { group: GalleryGroup }) {
   );
 }
 
-export default async function WorkPage({
-  params,
+/** A project page body, the same for every language. */
+export function ProjectPage({
+  locale,
+  slug,
 }: {
-  params: Promise<{ slug: string }>;
+  locale: Locale;
+  slug: string;
 }) {
-  const { slug } = await params;
+  const { projects, tags, ui } = getContent(locale);
+  const tagLabel = Object.fromEntries(tags.map((t) => [t.id, t.label]));
   const index = projects.findIndex((x) => x.slug === slug);
-  if (index < 0) notFound();
-  const p = projects[index];
+  const p: Project = projects[index];
   const next = projects[(index + 1) % projects.length];
   const [lead, ...rest] = p.gallery;
   /** Numbers in the project's own colour, darkened enough to read on white. */
@@ -165,11 +160,17 @@ export default async function WorkPage({
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader
+        locale={locale}
+        altHref={localePath(locale === "en" ? "ru" : "en", `/work/${slug}/`)}
+      />
       <main className="pb-16">
         <div className="rail pt-6 sm:pt-10">
-          <Link href="/" className="link text-[13.5px]">
-            ← Все проекты
+          <Link
+            href={locale === "en" ? "/en/" : "/"}
+            className="link text-[13.5px]"
+          >
+            {ui.allProjects}
           </Link>
           <div className="mt-5 flex flex-wrap items-end justify-between gap-5">
             <div className="min-w-0">
@@ -220,7 +221,7 @@ export default async function WorkPage({
                 <p className="mt-1 text-[14px] text-fg-2">{lead.note}</p>
               )}
             </div>
-            <GroupItems group={lead} />
+            <GroupItems group={lead} openSeparately={ui.openSeparately} />
           </section>
         )}
 
@@ -230,7 +231,7 @@ export default async function WorkPage({
               className="mt-10 rounded-[var(--r-lg)] border border-line bg-surface p-6 sm:p-8"
               style={{ boxShadow: `inset 4px 0 0 ${p.tint}` }}
             >
-              <div className="mono-label">Результат</div>
+              <div className="mono-label">{ui.result}</div>
               <p className="mt-3 max-w-[860px] font-display text-[clamp(1.25rem,2.4vw,1.75rem)] font-semibold leading-[1.25] tracking-[-0.02em] text-fg">
                 {p.result}
               </p>
@@ -255,13 +256,13 @@ export default async function WorkPage({
           <Reveal>
             <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.4fr]">
               <section>
-                <div className="mono-label">Задача</div>
+                <div className="mono-label">{ui.task}</div>
                 <p className="mt-3 text-[17px] leading-relaxed text-fg">
                   {p.task}
                 </p>
               </section>
               <section>
-                <div className="mono-label">Что сделал</div>
+                <div className="mono-label">{ui.did}</div>
                 <ul className="mt-3 space-y-2.5">
                   {p.did.map((d) => (
                     <li
@@ -292,13 +293,13 @@ export default async function WorkPage({
                   <p className="mt-1 text-[14px] text-fg-3">{g.note}</p>
                 )}
               </div>
-              <GroupItems group={g} />
+              <GroupItems group={g} openSeparately={ui.openSeparately} />
             </section>
           </Reveal>
         ))}
 
         <div className="rail mt-14">
-          <div className="mono-label">Технологии</div>
+          <div className="mono-label">{ui.tech}</div>
           <div className="mt-3 flex flex-wrap gap-2">
             {p.tech.map((t) => (
               <span
@@ -311,11 +312,11 @@ export default async function WorkPage({
           </div>
 
           <Link
-            href={`/work/${next.slug}/`}
+            href={localePath(locale, `/work/${next.slug}/`)}
             className="panel mt-12 flex items-center justify-between gap-4 p-5 sm:p-6"
           >
             <div className="min-w-0">
-              <div className="mono-label">Следующий проект</div>
+              <div className="mono-label">{ui.next}</div>
               <div className="mt-2 truncate font-display text-[20px] font-semibold text-fg">
                 {next.name}
               </div>
@@ -324,7 +325,7 @@ export default async function WorkPage({
           </Link>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
     </>
   );
 }
